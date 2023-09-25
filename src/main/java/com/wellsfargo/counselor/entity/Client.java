@@ -1,57 +1,61 @@
 package com.wellsfargo.counselor.entity;
 
-
 import jakarta.persistence.*;
 
 import java.util.List;
 
 @Entity
-public class Advisor {
+public class Client {
 
     @Id
     @SequenceGenerator(
-            name = "advisor_sequence",
-            sequenceName = "advisor_sequence",
+            name = "client_sequence",
+            sequenceName = "client_sequence",
             allocationSize = 1
     )
     @GeneratedValue(
-            generator = "advisor_sequence",
+            generator = "client_sequence",
             strategy = GenerationType.SEQUENCE
     )
-    private long advisorId;
-
-    @Column(nullable = false)
+    private long clientId;
+    @ManyToOne
+    @JoinColumn(name = "advisor_id")
+    private Advisor advisor;
+    @OneToMany(mappedBy = "client")
+    private List<Portfolio> portfolios;
+    @Column(nullable = false, name = "first_name")
     private String firstName;
-
-    @Column(nullable = false)
+    @Column(nullable = false, name = "last_name")
     private String lastName;
-
     @Column(nullable = false)
     private String address;
-
     @Column(nullable = false)
     private String phone;
-
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
-    @OneToMany(mappedBy = "advisor")
-    private List<Client> clients;
 
-    protected Advisor() {
-
+    public Client() {
     }
 
-    public Advisor(String firstName, String lastName, String address, String phone, String email, List<Client> clients) {
+    public Client(Advisor advisor, String firstName, String lastName, String address, String phone, String email) {
+        this.advisor = advisor;
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.phone = phone;
         this.email = email;
-        this.clients = clients;
     }
 
-    public Long getAdvisorId() {
-        return advisorId;
+    public long getClientId() {
+        return clientId;
+    }
+
+    public Advisor getAdvisor() {
+        return advisor;
+    }
+
+    public void setAdvisor(Advisor advisor) {
+        this.advisor = advisor;
     }
 
     public String getFirstName() {
@@ -92,13 +96,5 @@ public class Advisor {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public List<Client> getClients() {
-        return clients;
-    }
-
-    public void setClients(List<Client> clients) {
-        this.clients = clients;
     }
 }
